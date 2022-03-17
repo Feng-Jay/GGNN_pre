@@ -6,9 +6,9 @@ from shutil import copyfile
 def train(epoch, dataloader, net, criterion, optimizer, opt, writer):
     # print(epoch)
     # print(dataloader)
-    for i, (adj_matrices, target) in enumerate(dataloader, 0):
+    for j, (adj_matrices, target) in enumerate(dataloader, 0):
         # print(adj_matrices)
-        print("i = {i}".format(i=i))
+        # print("i = {i}".format(i=i))
         # print(len(adj_matrices[0]))
         # continue 
         net.zero_grad()
@@ -37,23 +37,26 @@ def train(epoch, dataloader, net, criterion, optimizer, opt, writer):
         # print(target)
 
         if opt.loss == 1:
-            left_output, right_output = net(left_init_input, left_adj_matrix, right_init_input, right_adj_matrix)
-            loss = criterion(left_output,right_output, target) 
+            for i in range(len(left_adj_matrix)):
+                left_output, right_output = net(left_init_input, left_adj_matrix, right_init_input, right_adj_matrix)
+                loss = criterion(left_output,right_output, target) 
             if writer:
                writer.add_scalar('loss', loss.data.item(), int(epoch))
         else:
             for i in range(len(left_adj_matrix)):
                 output = net(left_init_input, left_adj_matrix[i], right_init_input, right_adj_matrix[i])
                 # print(output)
-                loss = criterion(output, target) 
+                # print(target[i])
+                loss = abs(target[i] - output)
+                # loss = criterion(output, target) 
             if writer:
                writer.add_scalar('loss', loss.data.item(), int(epoch))
            
         loss.backward()
         optimizer.step()
 
-        if i % int(len(dataloader) / 10 + 1) == 0 and opt.verbal:
-            print('[%d/%d][%d/%d] Loss: %.4f' % (epoch, opt.niter, i, len(dataloader), loss.item()))
+        # if i % int(len(dataloader) / 10 + 1) == 0 and opt.verbal:
+        print('[%d/%d][%d/%d] Loss: %.4f' % (epoch, opt.niter, j, len(dataloader), loss.item()))
 
     # torch.save(net, opt.model_path)
     # copyfile(opt.model_path, "{}.{}".format(opt.model_path, epoch))

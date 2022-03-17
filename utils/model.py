@@ -48,14 +48,14 @@ class Propogator(nn.Module):
         A_in = A[:, :self.n_node]
         A_out = A[:, self.n_node:]
 
-        a_in = torch.bmm(A_in, state_in)
-        a_out = torch.bmm(A_out, state_out)
-        a = torch.cat((a_in, a_out, state_cur), 2)
+        a_in = torch.mm(A_in, state_in)
+        a_out = torch.mm(A_out, state_out)
+        a = torch.cat((a_in, a_out, state_cur), 1)
 
         r = self.reset_gate(a)
         z = self.update_gate(a)
         
-        joined_input = torch.cat((a_in, a_out, r * state_cur), 2)
+        joined_input = torch.cat((a_in, a_out, r * state_cur), 1)
         h_hat = self.tansform(joined_input)
 
         output = (1 - z) * state_cur + z * h_hat
@@ -148,7 +148,7 @@ class GGNN(nn.Module):
         )
 
         self.class_prediction = nn.Sequential(
-            nn.Linear(opt.state_dim, opt.n_hidden),
+            nn.Linear(opt.n_node, opt.n_hidden),
             nn.LeakyReLU(),
             nn.Linear(opt.n_hidden, opt.n_classes),
             nn.Softmax(dim=1)    
@@ -179,21 +179,25 @@ class GGNN(nn.Module):
                 out_states.append(self.out_fcs[i](prop_state))
             # print(in_states.shape)
             in_states = torch.stack(in_states).transpose(0, 1).contiguous()
-            in_states = in_states.view(-1, self.n_node, self.state_dim)
+            # print(self.n_node)
+            in_states = in_states.view(self.n_node, self.state_dim)
 
             out_states = torch.stack(out_states).transpose(0, 1).contiguous()
-            out_states = out_states.view(-1, self.n_node, self.state_dim)
+            out_states = out_states.view(self.n_node, self.state_dim)
             # print(in_states.shape)
             prop_state = self.propogator(in_states, out_states, prop_state, A)
        
         # print("Prop state : " + str(prop_state.shape))
         # output = self.out(prop_state)
         # print("Out : " + str(output.shape))
-
+        # print("prop")
+        # print(prop_state.shape)
         soft_attention_ouput = self.soft_attention(prop_state)
+        # print(soft_attention_ouput)
         # print("Soft : " + str(soft_attention_ouput.shape))
         # Element wise hadamard product to get the graph representation, check Equation 7 in GGNN paper for more details
         output = torch.mul(prop_state,soft_attention_ouput)
+        # print(output.shape)
         # print(output.shape)
         # print("Out : " + str(output.shape))
         output = output.sum(1)
@@ -215,14 +219,14 @@ class BiGGNN(nn.Module):
         self.n_node = opt.n_node
 
         self.fc_output = nn.Sequential(
-            nn.Linear(20*2, 50),
+            nn.Linear(20, 50),
             nn.ReLU(),
-            nn.Linear(50, 2),
-            nn.Softmax(dim=1)
+            nn.Linear(50, 1),
+            nn.Sigmoid()
         )
 
         self.feature_extraction = nn.Sequential(
-            nn.Linear(5, 50),
+            nn.Linear(2000, 50),
             nn.ReLU(),
             nn.Linear(50, 20)  
         )
@@ -243,15 +247,20 @@ class BiGGNN(nn.Module):
         left_output = self.ggnn(left_prop_state, left_A)
         right_output = self.ggnn(right_prop_state, right_A)
         # print(self.n_node)
+        # print(left_output.shape)
 
         left_output = self.feature_extraction(left_output)
         right_output = self.feature_extraction(right_output)
+        # print(left_output)
 
         if self.opt.loss == 1:
             return left_output, right_output
         else:
-            concat_layer = torch.cat((left_output, right_output),1)
+            # concat_layer = torch.cat((left_output, right_output),0)
+            # print(concat_layer.shape)
+            concat_layer = left_output - right_output
             output = self.fc_output(concat_layer)
+            # print(output)
             return output
 
 

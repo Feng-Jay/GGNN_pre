@@ -19,21 +19,21 @@ import sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--workers', type=int, help='number of data loading workers', default=2)
-parser.add_argument('--train_batch_size', type=int, default=6, help='input batch size')
+parser.add_argument('--train_batch_size', type=int, default=1, help='input batch size')
 parser.add_argument('--test_batch_size', type=int, default=32, help='input batch size')
 parser.add_argument('--state_dim', type=int, default=5, help='GGNN hidden state size')
 parser.add_argument('--n_steps', type=int, default=10, help='propogation steps number of GGNN')
-parser.add_argument('--niter', type=int, default=10, help='number of epochs to train for')
+parser.add_argument('--niter', type=int, default=50, help='number of epochs to train for')
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate')
 parser.add_argument('--cuda', action='store_true', help='enables cuda')
 parser.add_argument('--verbal', type=bool, default=True, help='print training info or not')
 parser.add_argument('--manualSeed', type=int, help='manual seed')
-parser.add_argument('--n_classes', type=int, default=10, help='manual seed')
-parser.add_argument('--left_directory', default="my_data/new/train/train.txt", help='left encoded program data')
-parser.add_argument('--right_directory', default="my_data/old/train/train.txt", help='right encoded program data')
+parser.add_argument('--n_classes', type=int, default=2, help='manual seed')
+parser.add_argument('--left_directory', default="my_data/new/train/train_1.txt", help='left encoded program data')
+parser.add_argument('--right_directory', default="my_data/old/train/train_1.txt", help='right encoded program data')
 parser.add_argument('--model_path', default="model/model.ckpt", help='path to save the model')
 parser.add_argument('--n_hidden', type=int, default=50, help='number of hidden layers')
-parser.add_argument('--size_vocabulary', type=int, default=10, help='maximum number of node types')
+parser.add_argument('--size_vocabulary', type=int, default=2000, help='maximum number of node types')
 parser.add_argument('--is_training_ggnn', type=bool, default=False, help='Training GGNN or BiGGNN')
 parser.add_argument('--training', action="store_true",help='is training')
 parser.add_argument('--testing', action="store_true",help='is testing')
@@ -82,9 +82,9 @@ def main(opt):
                                       shuffle=True, num_workers=2)
 
 
-    # test_dataset = CrossLingualProgramData(opt.size_vocabulary, 'my_data/new/test/test_17.txt','my_data/old/test/test_17.txt', False,opt.loss, opt.n_classes,opt.data_percentage)
-    # test_dataloader = bAbIDataloader(test_dataset, batch_size=opt.train_batch_size, \
-    #                                   shuffle=True, num_workers=2)
+    test_dataset = CrossLingualProgramData(opt.size_vocabulary, 'my_data/new/test/test_18.txt','my_data/old/test/test_18.txt', False,opt.loss, opt.n_classes,opt.data_percentage)
+    test_dataloader = bAbIDataloader(test_dataset, batch_size=opt.train_batch_size, \
+                                      shuffle=True, num_workers=2)
 
     opt.annotation_dim = 1  # for bAbI
     if opt.training:
@@ -138,18 +138,18 @@ def main(opt):
 
     if opt.training:
         for epoch in range(epoch+1, epoch + opt.niter):
-            input("train!")
+            # input("train!")
             train(epoch, train_dataloader, net, criterion, optimizer, opt, writer)
         # writer.close()
     print("test!")
 
-    # if opt.testing:
-    #     filename = "{}.{}".format(opt.model_path, epoch)
-    #     if os.path.exists(filename):
-    #         net = torch.load(filename)
-    #         net.cuda()
-    #         optimizer = optim.Adam(net.parameters(), lr=opt.lr)
-    #     test(test_dataloader, net, criterion, optimizer, opt)
+    if opt.testing:
+        # filename = "{}.{}".format(opt.model_path, epoch)
+        # # if os.path.exists(filename):
+        #     net = torch.load(filename)
+        #     net.cuda()
+        #     optimizer = optim.Adam(net.parameters(), lr=opt.lr)
+        test(test_dataloader, net, criterion, optimizer, opt)
 if __name__ == "__main__":
     main(opt)
 

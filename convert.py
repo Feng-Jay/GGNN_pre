@@ -7,23 +7,23 @@ import pandas as pd
 file_path ="E:\JDT_repo\code"
 
 dirs= os.listdir(file_path)
-i=0
+j=0
 tag = 0
 for dir in dirs:
     # First to get its tag
     csv_file = "D:/JDT/ISSTA21-JIT-DP/Data_Extraction/git_base/datasets/jdt/30k/jdt_k_feature.csv"
     csvpd = pd.read_csv(csv_file)
     for i in range(len(csvpd)):
-        print(len(csvpd))
-        print(type(dir))
-        print(type(csvpd['_id'][i]))
+        # print(len(csvpd))
+        # print(type(dir))
+        # print(type(csvpd['_id'][i]))
         if csvpd['_id'][i] == dir:
             tag = csvpd['bug'][i]
-        input("test")
-    i +=1 
+        # input("test")
+    j +=1 
     temp = []
     if os.path.exists(file_path+"\\"+dir+"\\NewMatrix.txt"):
-        print(dir)
+        # print(dir)
         file1 = open(file_path+"\\"+dir+"\\NewMatrix.txt")
         file2 = open(file_path+"\\"+dir+"\\OldMatrix.txt")
         
@@ -42,23 +42,27 @@ for dir in dirs:
         line2 = line2.replace(']]','\n')
         line2 = line2.replace('[','')
         line2 = line2.replace(']','')
-        if int(i/20) <17 :
-            train1 = "./my_data/new/train/train_{counter}.txt".format(counter=int(i/20)) 
-            train2 = './my_data/old/train/train_{counter}.txt'.format(counter=int(i/20))
+        if int(j/20) <17 :
+            train1 = "./my_data/new/train/train_{counter}.txt".format(counter=int(j/20)) 
+            train2 = './my_data/old/train/train_{counter}.txt'.format(counter=int(j/20))
         else:
-            train1 = "./my_data/new/test/test_{counter}.txt".format(counter=int(i/20)) 
-            train2 = './my_data/old/test/test_{counter}.txt'.format(counter=int(i/20))
+            train1 = "./my_data/new/test/test_{counter}.txt".format(counter=int(j/20)) 
+            train2 = './my_data/old/test/test_{counter}.txt'.format(counter=int(j/20))
         
         # line = line.replace(' [','')
         if line != '':
             with open(train1,'a') as f:
                 f.write(line)
-                f.write(tag)
+                tag = str(tag)
+                f.write("? "+tag+" "+tag+" "+tag)
+                f.write('\n')
                 f.write('\n')
         if line2 != '':
             with open(train2,'a') as f2:
                 f2.write(line2)
-                f2.write(tag)
+                tag=str(tag)
+                f2.write("? "+tag+" "+tag+" "+tag)
+                f2.write('\n')
                 f2.write('\n')
         
         # print(temp)

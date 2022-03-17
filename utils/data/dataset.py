@@ -241,7 +241,8 @@ class CrossLingualProgramData():
         left_all_data = load_graphs_from_file(left_path)#,is_train,n_classes,data_percentage)
         # print(len(left_all_data))
         right_all_data = load_graphs_from_file(right_path)#,is_train,n_classes,data_percentage)
-        # print(left_all_data)
+        # print(len(left_all_data))
+        # print(len(right_all_data))
         # input("test")
 
         left_all_data = np.array(left_all_data)[0:len(left_all_data)]
@@ -255,7 +256,7 @@ class CrossLingualProgramData():
             print("Number of all left testing data : " + str(len(left_all_data)))
             print("Number of all right testing data : " + str(len(right_all_data)))
 
-        self.n_edge_types =  find_max_edge_id(left_all_data)
+        self.n_edge_types =  1#find_max_edge_id(left_all_data)
         self.n_node = size_vocabulary
         max_left_node = find_max_node_id(left_all_data)
         max_right_node = find_max_node_id(right_all_data)
@@ -322,7 +323,7 @@ class CrossLingualProgramData():
         #     target = 1.0
         # else:
         target = left_annotation[0][0]
-
+        # print(target)
         # if self.loss == 0:
         #     target = int(target)
 
