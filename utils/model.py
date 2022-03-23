@@ -226,7 +226,7 @@ class BiGGNN(nn.Module):
         )
 
         self.feature_extraction = nn.Sequential(
-            nn.Linear(2000, 50),
+            nn.Linear(7200, 50),
             nn.ReLU(),
             nn.Linear(50, 20)  
         )

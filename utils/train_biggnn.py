@@ -8,11 +8,12 @@ def train(epoch, dataloader, net, criterion, optimizer, opt, writer):
     # print(dataloader)
     for j, (adj_matrices, target) in enumerate(dataloader, 0):
         # print(adj_matrices)
-        # print("i = {i}".format(i=i))
+        # print("i = {i}".format(i=j))
         # print(len(adj_matrices[0]))
         # continue 
         net.zero_grad()
         # optimizer.zero_grad()
+        # print("test")
         left_adj_matrix = adj_matrices[0]
         right_adj_matrix = adj_matrices[1]
     

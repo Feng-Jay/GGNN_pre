@@ -15,7 +15,7 @@ def load_graphs_from_file(file_name):
     data_list = []
     edge_list = []
     target_list = []
-    
+    # dirs = os.listdir(file_name):
     with open(file_name,'r') as f:
         for line in f:
             # print(line)

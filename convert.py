@@ -42,28 +42,27 @@ for dir in dirs:
         line2 = line2.replace(']]','\n')
         line2 = line2.replace('[','')
         line2 = line2.replace(']','')
-        if int(j/20) <17 :
-            train1 = "./my_data/new/train/train_{counter}.txt".format(counter=int(j/20)) 
-            train2 = './my_data/old/train/train_{counter}.txt'.format(counter=int(j/20))
-        else:
-            train1 = "./my_data/new/test/test_{counter}.txt".format(counter=int(j/20)) 
-            train2 = './my_data/old/test/test_{counter}.txt'.format(counter=int(j/20))
-        
+        if j%5 ==0 :
+            train1 = "./my_data/new/test/test_x.txt"
+            train2 = './my_data/old/test/test_x.txt'
+        # else:
+        #     train1 = "./my_data/new/test/test_{counter}.txt".format(counter=int(j/20)) 
+        #     train2 = './my_data/old/test/test_{counter}.txt'.format(counter=int(j/20))
         # line = line.replace(' [','')
-        if line != '':
-            with open(train1,'a') as f:
-                f.write(line)
-                tag = str(tag)
-                f.write("? "+tag+" "+tag+" "+tag)
-                f.write('\n')
-                f.write('\n')
-        if line2 != '':
-            with open(train2,'a') as f2:
-                f2.write(line2)
-                tag=str(tag)
-                f2.write("? "+tag+" "+tag+" "+tag)
-                f2.write('\n')
-                f2.write('\n')
+            if line != '' and line2!= '':
+                with open(train1,'a') as f:
+                    f.write(line)
+                    tag = str(tag)
+                    f.write("? "+tag+" "+tag+" "+tag)
+                    f.write('\n')
+                    f.write('\n')
+            if line!='' and line2 != '':
+                with open(train2,'a') as f2:
+                    f2.write(line2)
+                    tag=str(tag)
+                    f2.write("? "+tag+" "+tag+" "+tag)
+                    f2.write('\n')
+                    f2.write('\n')
         
         # print(temp)
         # print(temp[1])

@@ -54,7 +54,7 @@ def test(dataloader, net, criterion, optimizer, opt):
 
     
         else:
-            all_predicted = []
+            
             # all_targets = []
             for i in range(len(left_adj_matrix)):
                 output = net(left_init_input, left_adj_matrix[i], right_init_input, right_adj_matrix[i])
